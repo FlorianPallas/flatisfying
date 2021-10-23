@@ -1,9 +1,10 @@
 import type { NextPage } from 'next';
+import ReceiptSplit from '~/components/ReceiptSplit';
 
 const Page: NextPage = () => {
   return (
     <main>
-      <h1>Here be dragons 🐉</h1>
+      <ReceiptSplit />
     </main>
   );
 };
