@@ -4,6 +4,7 @@ import {
   FormEvent,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from 'react';
 import type { Item, User } from '~/types';
@@ -11,6 +12,9 @@ import { calculateSplits, calculateSplitTotal, calculateTotal } from '~/utils';
 import css from './index.module.scss';
 
 const ReceiptSplit: FC = () => {
+  const inputPrice = useRef<HTMLInputElement>(null);
+  const divList = useRef<HTMLDivElement>(null);
+
   // PRICE
   const [price, setPrice] = useState('0.00');
   const onPriceChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -29,7 +33,7 @@ const ReceiptSplit: FC = () => {
   };
 
   // ITEMS
-  const [items, setItems] = useState<Item[]>([]);
+  const [items, setItems] = useState<Item[]>([{ id: 0, price: 0, users: [] }]);
   const [itemId, setItemId] = useState(0);
   const item = items.find((i) => i.id === itemId);
   const nextItemId = useMemo(() => {
@@ -41,6 +45,7 @@ const ReceiptSplit: FC = () => {
 
   const onItemClick = (id: number) => {
     setItemId(id);
+    inputPrice.current?.focus();
   };
   useEffect(() => {
     const newPrice = item?.price ?? 0;
@@ -49,6 +54,8 @@ const ReceiptSplit: FC = () => {
   const onNewItem = () => {
     setItems((old) => [...old, { id: nextItemId, price: 0, users: [] }]);
     setItemId(nextItemId);
+    divList.current?.scroll({ top: divList.current.scrollHeight });
+    inputPrice.current?.focus();
   };
 
   // USERS
@@ -86,7 +93,7 @@ const ReceiptSplit: FC = () => {
           </p>
         ))}
       </div>
-      <div className={css['receipt-list']}>
+      <div className={css['receipt-list']} ref={divList}>
         {items.map((item, index) => (
           <div
             className={`${css['receipt-list__item']} ${
@@ -115,6 +122,7 @@ const ReceiptSplit: FC = () => {
           value={price}
           onChange={onPriceChange}
           onBlur={onPriceBlur}
+          ref={inputPrice}
         />
       </div>
       <div className={css['receipt-split__assign']}>
